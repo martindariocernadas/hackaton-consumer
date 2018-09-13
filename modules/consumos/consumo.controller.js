@@ -1,7 +1,8 @@
 var mongoose = require('mongoose'),
     consumoSchema = require('./consumo.model'),    
     Consumo = mongoose.model('Consumo'),
-    request = require('request');
+    request = require('request'),
+    logger = require('../../utils/logger');
 
 //If it isn't production, use the local env file
 if(!process.env.NODE_ENV || process.env.NODE_ENV.toUpperCase() !== 'PRODUCTION'){
@@ -16,9 +17,12 @@ if(!process.env.NODE_ENV || process.env.NODE_ENV.toUpperCase() !== 'PRODUCTION')
  */
 exports.create = function (movimiento) {
 
+    var log = logger().getLogger('recordProcessor');
+
     var token='';
 
     if(movimiento.MERCHANT_TYPE_DESC != ''){
+        log.info('Un nuevo movimiento: ' + movimiento.MERCHANT_TYPE_DESC);
         var c = new Consumo({
             date: new Date(movimiento.EVENT_DT),
             tipoEvento: movimiento.DEBIT_CARD_EVENT_TYPE_CD,
