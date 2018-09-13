@@ -22,8 +22,7 @@ exports.create = function (movimiento) {
     var token='';
 
     if(movimiento.MERCHANT_TYPE_DESC != ''){
-        log.info('Un nuevo movimiento: ' + movimiento.MERCHANT_TYPE_DESC);
-        var c = new Consumo({
+         var c = new Consumo({
             date: new Date(movimiento.EVENT_DT),
             tipoEvento: movimiento.DEBIT_CARD_EVENT_TYPE_CD,
             eventoDescripcion: movimiento.DEBIT_CARD_EVENT_TYPE_DESC,
@@ -50,6 +49,7 @@ exports.create = function (movimiento) {
                 dni: process.env.DNI_LOGIN,
                 password: process.env.PASS_LOGIN
             })}, function (err, res, body) {
+                log.info('Hice login: ');
                 if (!err && res.statusCode == 200) {
                     body = JSON.parse(body);
                     var token = body.token;
@@ -65,6 +65,11 @@ exports.create = function (movimiento) {
                                 cardId: c.cardId
                                 } 
                         })
+
+                    },function(err, res, body){
+                        if (!err && res.statusCode == 200) {
+                            log.info('Di de alta el movimiento');
+                        }
                     });
                     
                 }
