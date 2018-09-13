@@ -61,7 +61,8 @@ exports.create = function (movimiento) {
                                 date: c.date,
                                 ammount: c.monto,
                                 categoria: c.rubro,
-                                descripcion: c.eventoDescripcion
+                                descripcion: c.eventoDescripcion,
+                                cardId: c.cardId
                                 } 
                         })
                     });
