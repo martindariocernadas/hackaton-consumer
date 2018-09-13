@@ -38,7 +38,7 @@ var consumoSchema = new Schema({
         type: Number
     },
     rubroDescripcion: {
-        type: Number
+        type: String
     },
     rubroGrupo: {
         type: String
