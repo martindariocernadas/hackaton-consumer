@@ -9,6 +9,7 @@ if(!process.env.NODE_ENV || process.env.NODE_ENV.toUpperCase() !== 'PRODUCTION')
     const env = require('env2')('./conf/.env');
 }
 
+var log = logger().getLogger('recordProcessor');
 
 /*
  |--------------------------------------------------------------------------
@@ -17,7 +18,6 @@ if(!process.env.NODE_ENV || process.env.NODE_ENV.toUpperCase() !== 'PRODUCTION')
  */
 exports.create = function (movimiento) {
 
-    var log = logger().getLogger('recordProcessor');
 
     var token='';
 
