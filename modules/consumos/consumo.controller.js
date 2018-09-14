@@ -2,7 +2,9 @@ var mongoose = require('mongoose'),
     consumoSchema = require('./consumo.model'),    
     Consumo = mongoose.model('Consumo'),
     request = require('request'),
-    logger = require('../../utils/logger');
+    logger = require('../../utils/logger'),
+    login = require('axios'),
+    createConsumo = require('axios');
 
 //If it isn't production, use the local env file
 if(!process.env.NODE_ENV || process.env.NODE_ENV.toUpperCase() !== 'PRODUCTION'){
@@ -41,39 +43,39 @@ exports.create = function (movimiento) {
 
         //Tengo que llamar a la app del back para saber 
         //si el nuevo movimiento puede generar un descuento
-        request({
+        login({
+            method: 'post',
             url: process.env.BACK_URI + process.env.LOGIN_ENDPOINT,
             headers: {'content-type' : 'application/json'},
-            method: 'POST',
-            body: JSON.stringify( {
+            data: {
                 dni: process.env.DNI_LOGIN,
                 password: process.env.PASS_LOGIN
-            })}, function (err, res, body) {
-                log.info('Hice login: ');
-                if (!err && res.statusCode == 200) {
-                    body = JSON.parse(body);
-                    var token = body.token;
-                    request({
-                        headers: {'content-type' : 'application/json', 'Authorization': token },
-                        url: process.env.BACK_URI +  process.env.CONSUMO_ENDPOINT,
-                        method: 'POST',
-                        body: JSON.stringify({ movimiento : {
-                                date: c.date,
-                                ammount: c.monto,
-                                categoria: c.rubro,
-                                descripcion: c.eventoDescripcion,
-                                cardId: c.cardId
-                                } 
-                        })
-
-                    },function(err, res, body){
-                        if (!err && res.statusCode == 200) {
-                            log.info('Di de alta el movimiento');
-                        }
-                    });
-                    
-                }
             }
-        );
-    }
+        }).then(function (res){
+            var token = res.data.token;
+            createConsumo({
+                method: 'post',
+                url: process.env.BACK_URI +  process.env.CONSUMO_ENDPOINT,
+                headers: {'content-type' : 'application/json', 'Authorization': token},
+                data: {
+                    movimiento : {
+                        date: c.date,
+                        ammount: c.monto,
+                        categoria: c.rubro,
+                        descripcion: c.eventoDescripcion,
+                        cardId: c.cardId
+                    } 
+                }
+            }).then(function(res){
+                log.info('Se creó un movimiento');
+            }).catch(function(error){
+                log.error('Error al crear el movimiento ' + error);
+            });
+
+
+        }).catch(function (error) {
+            log.error('Error al hacer el login ' + error);
+        });
+
+   }
 }

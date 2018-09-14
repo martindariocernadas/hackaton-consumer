@@ -23,6 +23,7 @@
     "doc": "grunt jsdoc"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "commander": "~2.6.0",
     "log4js": "^0.6.38",
     "machina": "~1.0.0-1",
